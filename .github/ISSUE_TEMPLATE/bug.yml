@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible issue using synthetic data only
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never paste real messages, names, emails, profile links, screenshots, credentials, logs, databases, browser data, or private policies. Use synthetic examples only.
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Describe the behavior using synthetic data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Synthetic reproduction steps
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I removed all real personal and account data.
+          required: true

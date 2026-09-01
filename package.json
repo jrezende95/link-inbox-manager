@@ -1,0 +1,56 @@
+{
+  "name": "link-inbox-manager",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Local-first, configurable LinkedIn inbox triage for macOS",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrezende95/link-inbox-manager.git"
+  },
+  "keywords": ["linkedin", "inbox", "triage", "playwright", "macos", "local-first"],
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "doctor": "tsx src/cli.ts doctor",
+    "policy:validate": "tsx src/cli.ts policy-validate",
+    "onboarding:status": "tsx src/cli.ts onboarding-status",
+    "validation:run": "tsx src/cli.ts validation-run",
+    "cleanup:preview": "tsx src/cli.ts cleanup-preview",
+    "cleanup:approve": "tsx src/cli.ts cleanup-approve",
+    "cleanup:run": "tsx src/cli.ts cleanup-run",
+    "launch:approve": "tsx src/cli.ts launch-approve",
+    "run:once": "tsx src/cli.ts run-once",
+    "start": "tsx src/cli.ts daemon",
+    "status": "tsx src/cli.ts status",
+    "browser:login": "tsx src/cli.ts browser-login",
+    "sheets:authorize": "tsx scripts/authorize-google.ts",
+    "service:install": "tsx scripts/install-service.ts",
+    "service:uninstall": "tsx scripts/uninstall-service.ts",
+    "privacy:audit": "tsx scripts/privacy-audit.ts",
+    "verify": "npm run check && npm test && npm run privacy:audit"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "dotenv": "^17.2.2",
+    "googleapis": "^160.0.0",
+    "luxon": "^3.7.2",
+    "pino": "^9.9.4",
+    "playwright-core": "^1.55.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

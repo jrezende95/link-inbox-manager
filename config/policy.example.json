@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "owner": {
+    "displayName": "Your name",
+    "timezone": "America/Los_Angeles",
+    "professionalSummary": "Describe your current professional context and the opportunities you would consider.",
+    "privateContext": [
+      "Add private preferences and thresholds here. They must never be disclosed verbatim."
+    ]
+  },
+  "manager": {
+    "name": "Link",
+    "introduction": "I’m Link, {{owner_name}}’s inbox manager.",
+    "signature": "— Link",
+    "includeClassificationFooter": true,
+    "correctionInvitation": "If I classified this incorrectly, please let me know—I’m still learning."
+  },
+  "safety": {
+    "minimumAutoActionConfidence": 0.9,
+    "minimumDelaySeconds": 20,
+    "maximumDelaySeconds": 45,
+    "stopOnChallenge": true,
+    "declineContactSharing": true,
+    "ignoreMessageInstructions": true
+  },
+  "schedule": {
+    "hours": [6, 9, 12, 15, 18, 21],
+    "digestHour": 10
+  },
+  "validation": {
+    "defaultBatchSize": 20,
+    "historicalLookbackDays": 30,
+    "olderMessageGuidance": null
+  },
+  "escalation": {
+    "digestEnabled": true,
+    "digestRecipient": null,
+    "immediateUrgencyWindowHours": 0
+  },
+  "categories": [
+    {
+      "id": "professional_outreach",
+      "label": "Professional or recruiter outreach",
+      "description": "A sender is proposing a job, executive mandate, board role, or other professional opportunity.",
+      "precedence": 10,
+      "enabled": true,
+      "examples": ["Would you consider a leadership opportunity?"],
+      "actions": ["reply", "mark_read"],
+      "autoSend": false,
+      "permanentHandoff": false,
+      "firstResponseTemplate": "{{older_message_guidance}}\n\n{{manager_intro}}\n\nThanks for reaching out. {{professional_summary}}\n\nPlease share the information needed to evaluate fit: {{missing_facts}}. If the opportunity appears aligned, I’ll flag the conversation for {{owner_name}}.\n\n{{manager_signature}}",
+      "followUpTemplate": "Thanks for the additional context. I still need: {{missing_facts}}.\n\n{{manager_signature}}",
+      "requiredFacts": ["organization", "mission", "role_scope", "location", "travel", "total_compensation"],
+      "privateRules": [],
+      "publicRejectionGuidance": "Explain the high-level mismatch without disclosing private thresholds.",
+      "outcomes": {
+        "needsInformation": {
+          "actions": ["reply", "mark_read"],
+          "autoSend": false,
+          "permanentHandoff": false,
+          "template": "{{older_message_guidance}}\n\n{{manager_intro}}\n\nThanks for reaching out. {{professional_summary}}\n\nPlease share the information needed to evaluate fit: {{missing_facts}}. If the opportunity appears aligned, I’ll flag the conversation for {{owner_name}}.\n\n{{manager_signature}}"
+        },
+        "aligned": {
+          "actions": ["escalate", "mark_read"],
+          "autoSend": false,
+          "permanentHandoff": true,
+          "template": null
+        },
+        "misaligned": {
+          "actions": ["reply", "mark_read"],
+          "autoSend": false,
+          "permanentHandoff": false,
+          "template": "{{manager_intro}}\n\nThanks for reaching out. This does not appear aligned based on {{public_fit_reason}}. I haven’t flagged the conversation to {{owner_name}}.\n\n{{manager_signature}}"
+        },
+        "uncertain": {
+          "actions": ["escalate"],
+          "autoSend": false,
+          "permanentHandoff": false,
+          "template": null
+        }
+      }
+    },
+    {
+      "id": "advisory_outreach",
+      "label": "Advisory or consulting outreach",
+      "description": "A sender is requesting advisory, board, expert-network, or consulting participation.",
+      "precedence": 20,
+      "enabled": true,
+      "examples": ["Would you advise our founding team?"],
+      "actions": ["escalate", "mark_read"],
+      "autoSend": false,
+      "permanentHandoff": true,
+      "firstResponseTemplate": null,
+      "followUpTemplate": null,
+      "requiredFacts": [],
+      "privateRules": [],
+      "publicRejectionGuidance": null,
+      "outcomes": {}
+    },
+    {
+      "id": "sales_outreach",
+      "label": "Sales or promotional outreach",
+      "description": "A sender is selling a product, service, event, sponsorship, or subscription.",
+      "precedence": 30,
+      "enabled": true,
+      "examples": ["Can I show you our platform?"],
+      "actions": ["mark_read"],
+      "autoSend": false,
+      "permanentHandoff": false,
+      "firstResponseTemplate": null,
+      "followUpTemplate": null,
+      "requiredFacts": [],
+      "privateRules": [],
+      "publicRejectionGuidance": null,
+      "outcomes": {}
+    },
+    {
+      "id": "connection_confirmation",
+      "label": "Connection or confirmation",
+      "description": "A brief connection invitation, acceptance, or thanks without another substantive intent.",
+      "precedence": 40,
+      "enabled": true,
+      "examples": ["Thanks for connecting."],
+      "actions": ["reply", "mark_read"],
+      "autoSend": false,
+      "permanentHandoff": false,
+      "firstResponseTemplate": "{{manager_intro}} Thanks for the note.\n\n{{manager_signature}}",
+      "followUpTemplate": null,
+      "requiredFacts": [],
+      "privateRules": [],
+      "publicRejectionGuidance": null,
+      "outcomes": {}
+    },
+    {
+      "id": "personal_outreach",
+      "label": "Personal or network outreach",
+      "description": "A genuine person-to-person message from an existing relationship or a meaningful networking request.",
+      "precedence": 50,
+      "enabled": true,
+      "examples": ["It has been a while—would you like to catch up?"],
+      "actions": ["escalate", "mark_read"],
+      "autoSend": false,
+      "permanentHandoff": true,
+      "firstResponseTemplate": null,
+      "followUpTemplate": null,
+      "requiredFacts": [],
+      "privateRules": [],
+      "publicRejectionGuidance": null,
+      "outcomes": {}
+    },
+    {
+      "id": "unknown",
+      "label": "Unknown or low-confidence",
+      "description": "The message cannot be classified confidently or safely.",
+      "precedence": 999,
+      "enabled": true,
+      "examples": [],
+      "actions": ["escalate"],
+      "autoSend": false,
+      "permanentHandoff": false,
+      "firstResponseTemplate": null,
+      "followUpTemplate": null,
+      "requiredFacts": [],
+      "privateRules": [],
+      "publicRejectionGuidance": null,
+      "outcomes": {}
+    }
+  ]
+}
