@@ -2,10 +2,11 @@ import { DateTime } from "luxon";
 
 export function parseLinkedInTimestamp(raw: string | undefined, timezone: string, now = DateTime.now().setZone(timezone)): DateTime | null {
   if (!raw?.trim()) return null;
+  const zonedNow = now.setZone(timezone);
   const value = raw.replace(/^\s*[•·]\s*/, "").trim();
   const iso = DateTime.fromISO(value, { setZone: true });
   if (iso.isValid) return iso;
-  const today = now.startOf("day");
+  const today = zonedNow.startOf("day");
   const timeOnly = DateTime.fromFormat(value, "h:mm a", { zone: timezone, locale: "en-US" });
   if (timeOnly.isValid) return today.set({ hour: timeOnly.hour, minute: timeOnly.minute });
   const relative = value.match(/^(Today|Yesterday)(?:\s+at\s+(\d{1,2}:\d{2}\s+[AP]M))?$/i);
@@ -22,8 +23,8 @@ export function parseLinkedInTimestamp(raw: string | undefined, timezone: string
     const parsed = DateTime.fromFormat(normalized, format, { zone: timezone, locale: "en-US" });
     if (!parsed.isValid) continue;
     if (format.includes("yyyy")) return parsed;
-    let inferred = parsed.set({ year: now.year });
-    if (inferred > now.plus({ days: 1 })) inferred = inferred.minus({ years: 1 });
+    let inferred = parsed.set({ year: zonedNow.year });
+    if (inferred > zonedNow.plus({ days: 1 })) inferred = inferred.minus({ years: 1 });
     return inferred;
   }
   return null;
