@@ -39,7 +39,7 @@
   "dependencies": {
     "better-sqlite3": "^12.2.0",
     "dotenv": "^17.2.2",
-    "googleapis": "^160.0.0",
+    "googleapis": "^176.0.0",
     "luxon": "^3.7.2",
     "pino": "^9.9.4",
     "playwright-core": "^1.55.0",
