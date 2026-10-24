@@ -43,7 +43,7 @@
     "luxon": "^3.7.2",
     "pino": "^9.9.4",
     "playwright-core": "^1.55.0",
-    "zod": "^3.25.76"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
