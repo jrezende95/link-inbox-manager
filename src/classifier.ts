@@ -9,7 +9,7 @@ const classificationSchema = z.object({
   rationale: z.string().min(1),
   relationshipEvidence: z.string().optional(),
   promptInjectionDetected: z.boolean(),
-  extractedFacts: z.record(z.union([z.string(), z.number(), z.boolean(), z.null()])),
+  extractedFacts: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])),
   fit: z.enum(["not_applicable", "needs_information", "aligned", "misaligned", "uncertain"]),
   publicFitReason: z.string().nullable(),
 });

@@ -1,7 +1,8 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { Ledger } from "../src/ledger.js";
 import { conversation } from "./helpers.js";
 
@@ -16,8 +17,8 @@ describe("local ledger", () => {
     ledger.recordDecision(input, classification, decision);
     ledger.queueAction(input, decision);
     ledger.queueAction(input, decision);
-    expect(ledger.hasDecision(input.id, input.latestInbound.id)).toBe(true);
-    expect(ledger.pendingActions()).toHaveLength(1);
+    assert.equal(ledger.hasDecision(input.id, input.latestInbound.id), true);
+    assert.equal(ledger.pendingActions().length, 1);
     ledger.close();
   });
 
@@ -28,7 +29,30 @@ describe("local ledger", () => {
     const classification = { categoryId: "personal_outreach", confidence: 0.99, rationale: "Synthetic personal outreach", promptInjectionDetected: false, extractedFacts: {}, fit: "not_applicable" as const, publicFitReason: null };
     const decision = { categoryId: "personal_outreach", actions: ["escalate" as const], autoSend: false, draft: null, escalationReason: "Synthetic personal outreach", permanentHandoff: true };
     ledger.recordDecision(input, classification, decision);
-    expect(ledger.isOwnerControlled(input.id)).toBe(true);
+    assert.equal(ledger.isOwnerControlled(input.id), true);
     ledger.close();
+  });
+
+  it("retains deduplication and human control after a restart", () => {
+    const path = join(mkdtempSync(join(tmpdir(), "link-test-")), "ledger.sqlite");
+    const ledger = new Ledger(path);
+    const input = conversation();
+    const classification = { categoryId: "personal_outreach", confidence: 0.99, rationale: "Synthetic personal outreach", promptInjectionDetected: false, extractedFacts: {}, fit: "not_applicable" as const, publicFitReason: null };
+    const decision = { categoryId: "personal_outreach", actions: ["escalate" as const], autoSend: false, draft: null, escalationReason: "Owner review", permanentHandoff: true };
+    ledger.upsertConversation(input);
+    ledger.recordDecision(input, classification, decision);
+    ledger.queueAction(input, decision);
+    ledger.close();
+
+    const reopened = new Ledger(path);
+    try {
+      reopened.upsertConversation(input);
+      assert.equal(reopened.hasDecision(input.id, input.latestInbound.id), true);
+      assert.equal(reopened.isOwnerControlled(input.id), true);
+      reopened.queueAction(input, decision);
+      assert.equal(reopened.pendingActions().length, 1);
+    } finally {
+      reopened.close();
+    }
   });
 });

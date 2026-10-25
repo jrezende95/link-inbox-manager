@@ -30,6 +30,8 @@ Use this when the always-on service should append records without a coding agent
 
 The OAuth scope is limited to Google Sheets. The helper does not request Gmail, Drive file management, or profile scopes.
 
+The runtime uses Google's OAuth authentication library with direct Sheets REST requests, not the full Google APIs SDK. Existing environment variables and refresh-token files remain compatible; this dependency change does not require signing in again. Append requests have automatic HTTP retries disabled so an uncertain write is surfaced instead of silently duplicating review rows.
+
 ## Sheet columns
 
 Link appends batch, conversation identifiers and URL, sender metadata, received time, inbound text, recent context, classification, confidence, rationale, proposed actions, proposed response, escalation state, and one blank owner-feedback column.

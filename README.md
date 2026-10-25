@@ -120,6 +120,8 @@ npm run policy:validate
 
 Do not add real messages, profiles, policies, screenshots, credentials, local databases, browser data, or generated artifacts to issues or pull requests.
 
+Tests use Node's built-in test runner, not a separate web-development server or test framework. Run `npm run security:audit` to check installed dependencies against known advisories; CI runs this check too.
+
 ## Community and scope
 
 Issues, Discussions, and pull requests are welcome. The supported core remains inbound LinkedIn triage. Other components should be proposed as modular extensions. All changes require review, passing CI, and maintainer approval before merge.

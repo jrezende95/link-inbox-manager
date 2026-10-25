@@ -1,4 +1,4 @@
-import { google } from "googleapis";
+import { OAuth2Client } from "google-auth-library";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { AppConfig } from "../config.js";
@@ -33,7 +33,7 @@ function auth(config: AppConfig) {
     } catch { /* Connector-assisted validation does not require local OAuth. */ }
   }
   if (!refreshToken) return null;
-  const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
+  const client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
   client.setCredentials({ refresh_token: refreshToken });
   return client;
 }
@@ -42,27 +42,42 @@ export function sheetsConfigured(config: AppConfig): boolean {
   return Boolean(auth(config) && config.env.LINK_GOOGLE_SHEET_ID);
 }
 
-export async function appendReviewRecords(config: AppConfig, records: ReviewRecord[]): Promise<void> {
+interface SheetsRequest {
+  url: string;
+  method: "GET" | "PUT" | "POST";
+  params?: Record<string, string>;
+  data?: { values: unknown[][] };
+  retry: false;
+  timeout: number;
+}
+
+export type SheetsRequester = (request: SheetsRequest) => Promise<{ data: { values?: unknown[][] } }>;
+
+export async function appendReviewRecords(config: AppConfig, records: ReviewRecord[], requester?: SheetsRequester): Promise<void> {
   const client = auth(config);
   const spreadsheetId = config.env.LINK_GOOGLE_SHEET_ID;
   if (!client || !spreadsheetId || !records.length) return;
-  const sheets = google.sheets({ version: "v4", auth: client });
+  const request: SheetsRequester = requester ?? ((options) => client.request(options));
+  const valuesUrl = (range: string) => `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(spreadsheetId)}/values/${encodeURIComponent(range)}`;
   const tab = config.env.LINK_GOOGLE_SHEET_TAB.replaceAll("'", "''");
-  const existing = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'${tab}'!A1:O1` });
+  // Do not retry an append with an uncertain outcome: that could duplicate private review rows.
+  const options = { retry: false, timeout: 30_000 } as const;
+  const existing = await request({ ...options, method: "GET", url: valuesUrl(`'${tab}'!A1:O1`) });
   if (!existing.data.values?.length) {
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: `'${tab}'!A1:O1`,
-      valueInputOption: "RAW",
-      requestBody: { values: [[...headers]] },
+    await request({
+      ...options,
+      method: "PUT",
+      url: valuesUrl(`'${tab}'!A1:O1`),
+      params: { valueInputOption: "RAW" },
+      data: { values: [[...headers]] },
     });
   }
-  await sheets.spreadsheets.values.append({
-    spreadsheetId,
-    range: `'${tab}'!A:O`,
-    valueInputOption: "RAW",
-    insertDataOption: "INSERT_ROWS",
-    requestBody: {
+  await request({
+    ...options,
+    method: "POST",
+    url: `${valuesUrl(`'${tab}'!A:O`)}:append`,
+    params: { valueInputOption: "RAW", insertDataOption: "INSERT_ROWS" },
+    data: {
       values: records.map((record) => [
         record.batchId,
         record.conversationId,

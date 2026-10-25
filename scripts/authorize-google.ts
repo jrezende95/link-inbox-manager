@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { dirname, resolve } from "node:path";
 import { config as loadDotenv } from "dotenv";
-import { google } from "googleapis";
+import { OAuth2Client } from "google-auth-library";
 
 loadDotenv({ path: [".env.local", ".env"], quiet: true });
 
@@ -18,7 +18,7 @@ server.listen(0, host, async () => {
   const address = server.address();
   if (!address || typeof address === "string") throw new Error("Could not start the local OAuth callback.");
   const redirectUri = `http://${host}:${address.port}/oauth2callback`;
-  const client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+  const client = new OAuth2Client(clientId, clientSecret, redirectUri);
   const url = client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",

@@ -16,8 +16,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "test:watch": "node --import tsx --test --watch tests/*.test.ts",
+    "security:audit": "npm audit --audit-level=moderate",
     "doctor": "tsx src/cli.ts doctor",
     "policy:validate": "tsx src/cli.ts policy-validate",
     "onboarding:status": "tsx src/cli.ts onboarding-status",
@@ -39,18 +40,17 @@
   "dependencies": {
     "better-sqlite3": "^12.2.0",
     "dotenv": "^17.2.2",
-    "googleapis": "^160.0.0",
+    "google-auth-library": "^11.3.1",
     "luxon": "^3.7.2",
     "pino": "^9.9.4",
     "playwright-core": "^1.55.0",
-    "zod": "^3.25.76"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/luxon": "^3.7.1",
     "@types/node": "^24.3.0",
     "tsx": "^4.20.5",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "typescript": "^5.9.2"
   }
 }
